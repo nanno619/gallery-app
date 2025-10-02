@@ -7,7 +7,7 @@
 node_modules/
 dist/
 vendor/
-.env.example
+.env
 
 # Compiled Java class files
 *.class
