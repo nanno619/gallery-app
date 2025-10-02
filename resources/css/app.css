@@ -1,0 +1,16 @@
+@import "@tabler/core";
+
+.border-dashed {
+    border-style: dashed;
+    border-width: 2px;
+    border-color: var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius);
+}
+
+.navbar {
+    padding: 1rem 0rem;
+}
+
+.link-preview:hover {
+    cursor: zoom-in;
+}
