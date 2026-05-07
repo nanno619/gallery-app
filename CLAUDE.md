@@ -1,3 +1,41 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+
+- **Run dev server**: `composer run dev` (starts Laravel, queue, pail log viewer, and Vite concurrently)
+- **Run all tests**: `php artisan test`
+- **Run a single test**: `php artisan test --filter=testName`
+- **Run tests in a file**: `php artisan test tests/Feature/ExampleTest.php`
+- **Lint/format code**: `vendor/bin/pint --dirty` (run before finalizing any PHP changes)
+- **Build frontend**: `npm run build`
+
+## Architecture
+
+This is a photo gallery application with role-based access control.
+
+### Core Domain
+- **Photo** — the central entity; implements `HasMedia` via `spatie/laravel-medialibrary` so image files are managed through the media library rather than stored directly on the model. Has `published`/`withName`/`withCategory` query scopes.
+- **Category** — belongs to many photos.
+- **User** — uses `spatie/laravel-permission` (`HasRoles` trait). Roles are `Publisher` (photo CRUD permissions) and `SuperAdmin` (all permissions). Permissions follow PascalCase naming: `PhotoAdd`, `PhotoEdit`, `PhotoDelete`, `UserList`, `UserEdit`.
+
+### Authorization
+Policies exist for `Photo`, `User`, and `Welcome`. Gate checks are the preferred authorization path — always use policies rather than inline `can()` checks in controllers.
+
+### Routes
+- Public: `/` (WelcomeController)
+- Auth-guarded: `/photos` (resource), `/admin/users` (resource)
+- Auth scaffolding via `laravel/ui` (`Auth::routes()`)
+
+### Key Packages
+- `spatie/laravel-medialibrary` — photo file storage and retrieval; config at `config/media-library.php`
+- `spatie/laravel-permission` — RBAC; config at `config/permission.php`
+- `laravel/ui` — provides auth scaffolding (Bootstrap-based auth views in `resources/views/auth/`)
+
+### Seeders
+Run `php artisan db:seed --class=RolesAndPermissionsSeeder` to seed roles/permissions. `DatabaseSeeder` also calls `CategorySeeder` and `PhotoSeeder`.
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
