@@ -1,95 +1,89 @@
 @extends('layouts.app')
 
 @section('content')
-  <div class="page-wrapper">
 
-    <!-- PAGE HEADER -->
-    <div class="page-header d-print-none" aria-label="Page header">
-      <div class="container-xl">
-        <form method="GET" action="{{ route('welcome') }}" class="row g-2 align-items-center">
-          <div class="col-md-4">
-            <div class="input-icon">
-              <input type="text" class="form-control" placeholder="Search" name="name" value="{{ request()->input('name') }}" onkeydown="if (event.keyCode == 13) this.form.submit();">
-              <span class="input-icon-addon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
-                  <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                  <path d="M21 21l-6 -6"></path>
-                </svg>
-              </span>
-            </div>
-          </div>
-          <div class="d-print-none col-auto ms-auto">
-            <div class="d-flex">
-              <select class="form-select" name="category_id" onchange="this.form.submit();">
-                <option value="">All category</option>
-                @foreach ($categories as $category)
-                  <option value="{{ $category->id }}" @selected($category->id == request()->input('category_id'))>{{ $category->name }}</option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-        </form>
-      </div>
+  {{-- ── HERO ─────────────────────────────────────────────────────── --}}
+  <section class="gl-hero">
+
+    <div class="gl-mosaic" aria-hidden="true">
+      @foreach ($photos->take(9) as $photo)
+        <div class="gl-mosaic-cell" style="background-image: url('{{ $photo->getFirstMediaUrl() }}')"></div>
+      @endforeach
     </div>
-    <!-- END PAGE HEADER -->
 
+    <div class="gl-hero-overlay"></div>
 
-    <div class="page-body">
-      <div class="container-xl">
-        <div class="row row-cards">
+    <div class="gl-hero-content">
+      <span class="gl-hero-eyebrow">Gallery</span>
+      <h1 class="gl-hero-headline">Every frame<br>tells a story.</h1>
+      <p class="gl-hero-sub">A curated collection of exceptional photography.</p>
+      <a href="#gallery" class="gl-hero-cta">Explore the collection</a>
+    </div>
 
-          <!-- IMAGE CARD -->
-          @forelse ($photos as $photo)
-            <div class="col-sm-6 col-lg-3">
-              <div class="card card-sm position-relative">
-                <span class="badge bg-primary text-primary-fg position-absolute m-3" style="right: 0; top: 0;">{{ $photo->category?->name }}</span>
-                <a data-fslightbox="gallery" class="link-preview" href="{{ $photo->getFirstMediaUrl() }}" class="d-block">
-                  <img src="{{ $photo->getFirstMediaUrl() }}" class="card-img-top" style="height: 100%; object-fit: cover; height: 200px;"></a>
-                <div class="card-body">
-                  <div class="row mb-3">
-                    <div class="col-auto">
-                      <h3 class="m-0">{{ $photo->name }}</h3>
-                    </div>
-                    <div class="col d-flex align-items-center">
+  </section>
 
-                    </div>
-                  </div>
-                  <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
-                      <span class="avatar avatar-sm me-2 rounded" style="background-image: url({{ $photo->user?->avatar() }})"></span>
-                      <div>
-                        <div class="fs-5 fw-medium">{{ $photo->user?->name }}</div>
-                        <div class="text-secondary fs-5">{{ $photo->created_at->diffForHumans() }}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          @empty
-            <div class="col-12">
-              <div class="empty border-dashed">
-                <div class="empty-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <circle cx="12" cy="12" r="9"></circle>
-                    <line x1="9" y1="10" x2="9.01" y2="10"></line>
-                    <line x1="15" y1="10" x2="15.01" y2="10"></line>
-                    <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0"></path>
-                  </svg>
-                </div>
-                <p class="empty-title">No photo found.</p>
-                <p class="empty-subtitle text-secondary">
-                  Try adjusting your search or filter to find what you're looking for.
-                </p>
-              </div>
-            </div>
-          @endforelse
-          <!-- IMAGE CARD END -->
+  {{-- ── GALLERY ──────────────────────────────────────────────────── --}}
+  <section class="gl-gallery" id="gallery">
+
+    <div class="gl-controls">
+      <form method="GET" action="{{ route('welcome') }}" class="gl-controls-form">
+        <div class="gl-search-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="gl-search-icon" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input
+            type="text"
+            name="name"
+            placeholder="Search photographs…"
+            class="gl-search-input"
+            value="{{ request('name') }}"
+            onkeydown="if(event.keyCode==13)this.form.submit()"
+          >
         </div>
 
-        {{ $photos->links() }}
-      </div>
+        <select name="category_id" class="gl-select" onchange="this.form.submit()">
+          <option value="">All categories</option>
+          @foreach ($categories as $category)
+            <option value="{{ $category->id }}" @selected($category->id == request('category_id'))>{{ $category->name }}</option>
+          @endforeach
+        </select>
+      </form>
     </div>
-  </div>
+
+    <div class="gl-grid">
+      @forelse ($photos as $photo)
+        <div class="gl-item">
+          <a data-fslightbox="gallery" href="{{ $photo->getFirstMediaUrl() }}" class="gl-item-link">
+            <img src="{{ $photo->getFirstMediaUrl() }}" alt="{{ $photo->name }}" class="gl-item-img" loading="lazy">
+            <div class="gl-item-hover">
+              <span class="gl-item-name">{{ $photo->name }}</span>
+              <span class="gl-item-meta">
+                @if ($photo->category){{ $photo->category->name }} · @endif{{ $photo->user?->name }}
+              </span>
+            </div>
+            @if ($photo->category)
+              <span class="gl-item-badge">{{ $photo->category->name }}</span>
+            @endif
+          </a>
+        </div>
+      @empty
+        <div class="gl-empty">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+            <circle cx="9" cy="9" r="2"></circle>
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+          </svg>
+          <p class="gl-empty-title">No photographs found.</p>
+          <p class="gl-empty-sub">Try adjusting your search or filter.</p>
+        </div>
+      @endforelse
+    </div>
+
+    <div class="gl-pagination">
+      {{ $photos->links() }}
+    </div>
+
+  </section>
+
 @endsection
